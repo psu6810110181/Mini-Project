@@ -4,8 +4,8 @@ import { Animal } from '../../animals/entities/animal.entity';
 
 @Entity()
 export class Species {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   name: string; // ชื่อสายพันธุ์ (เช่น Lion)

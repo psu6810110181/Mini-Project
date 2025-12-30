@@ -3,8 +3,8 @@ import { Species } from '../../species/entities/species.entity';
 
 @Entity()
 export class Zone {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   name: string; // ชื่อโซน

@@ -4,8 +4,8 @@ import { Like } from '../../likes/entities/like.entity';
 
 @Entity()
 export class Animal {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   name: string; // ชื่อสัตว์ (เช่น Simba)
