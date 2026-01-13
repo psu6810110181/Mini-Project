@@ -12,22 +12,29 @@ import { SeedService } from './seed.service';
 import { Zone } from './zones/entities/zone.entity';
 import { Species } from './species/entities/species.entity';
 import { Animal } from './animals/entities/animal.entity';
-import { ConfigModule } from '@nestjs/config';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
+// 👇 1. เพิ่ม 2 บรรทัดนี้ (สำคัญมาก!)
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
-imports: [
-    TypeOrmModule.forRootAsync({ // 👈 เปลี่ยนเป็น forRootAsync
+  imports: [
+    // 👇 2. เพิ่มท่อนนี้เข้าไปใน imports เพื่อเปิดใช้ URL /images
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'upload'), // ชี้ไปที่โฟลเดอร์ uploads หน้าบ้าน
+      serveRoot: '/images', // ตั้งชื่อเล่น URL ว่า /images
+    }),
+
+    TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        type: 'postgres', // หรือ 'postgres', 'sqlite' ตามที่คุณใช้
+        type: 'postgres',
         host: configService.get<string>('DB_HOST'),
         port: configService.get<number>('DB_PORT'),
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_DATABASE'),
-        
-        // 2 บรรทัดล่างนี้เหมือนเดิม
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: true,
       }),
@@ -35,7 +42,7 @@ imports: [
     }),
     TypeOrmModule.forFeature([Zone, Species, Animal]),
     ConfigModule.forRoot({
-      isGlobal: true, // ให้ทุก Module เรียกใช้ได้เลย ไม่ต้อง Import ซ้ำ
+      isGlobal: true,
     }),
     UsersModule,
     ZonesModule,

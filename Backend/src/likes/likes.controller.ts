@@ -16,6 +16,16 @@ export class LikesController {
   toggleLike(@Request() req, @Body() createLikeDto: CreateLikeDto) {
     return this.likesService.toggleLike(req.user.userId, createLikeDto);
   }
+  
+  @UseGuards(AuthGuard('jwt'))
+  @Get('status/:animalId')
+  async checkStatus(@Request() req, @Param('animalId') animalId: string) {
+    // ❌ ของเดิม: return this.likesService.checkIsLiked(req.user.id, animalId);
+    
+    // ✅ แก้เป็น: ใช้ req.user.userId (เหมือนตอน toggleLike)
+    return this.likesService.checkIsLiked(req.user.userId, animalId);
+  }
+
 
   // 🔵 ดูรายการไลค์ทั้งหมด (เฉพาะ Admin)
   @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -23,13 +33,5 @@ export class LikesController {
   @Get()
   findAll() {
     return this.likesService.findAll();
-  }
-
-  // 🔴 ลบไลค์ทิ้ง (เฉพาะ Admin)
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles(UserRole.ADMIN)
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.likesService.remove(id);
   }
 }

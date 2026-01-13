@@ -14,19 +14,46 @@ export class SeedService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    // เช็คก่อนว่ามี Zone หรือยัง? ถ้ามีแล้วก็จบ ไม่ต้องทำไร
-    if (await this.zoneRepo.count() > 0) return;
+    // 🛡️ 1. เช็คก่อนว่ามีข้อมูลโซนอยู่แล้วหรือยัง?
+    const count = await this.zoneRepo.count();
 
-    console.log('🌱 กำลังปลูกข้อมูลสัตว์โลก 4 โซนตามบรีฟ (Seeding)...');
+    if (count > 0) {
+      console.log('✅ พบข้อมูลเดิมในฐานข้อมูลแล้ว -> ข้ามการ Seed (เพื่อรักษาข้อมูล Likes)');
+      return; // 🛑 จบการทำงานทันที ข้อมูลเก่าปลอดภัย
+    }
 
-    // --- 1. สร้าง ZONES (4 โซน) ---
-    const savanna = await this.zoneRepo.save({ name: 'โซนสะวันนา (Savanna)' });
-    const polar = await this.zoneRepo.save({ name: 'โซนขั้วโลก (Polar)' });
-    const rainforest = await this.zoneRepo.save({ name: 'โซนป่าดิบชื้น (Rainforest)' });
-    const asia = await this.zoneRepo.save({ name: 'โซนสัตว์เอเชีย (Asian)' });
+    // ---------------------------------------------------------
+    // ถ้าโค้ดมาถึงตรงนี้ แปลว่า Database ว่างเปล่า -> เริ่มสร้างใหม่
+    // ---------------------------------------------------------
+    console.log('🌱 ไม่พบข้อมูล... กำลังปลูกข้อมูลสัตว์โลกใหม่ (Seeding)...');
 
-    // --- 2. สร้าง SPECIES (พันธุ์สัตว์) ผูกกับ Zone ---
-    
+    // --- 1. สร้าง ZONES ---
+    const savanna = await this.zoneRepo.save({ 
+      name: 'โซนสะวันนา (Savanna)',
+      description: 'ดินแดนแห่งทุ่งหญ้ากว้างใหญ่ พบกับสิงโตเจ้าป่าและยีราฟคอยาว',
+      image_url: 'http://localhost:3000/images/zone/savanna.png' 
+    });
+
+    const polar = await this.zoneRepo.save({ 
+      name: 'โซนขั้วโลก (Polar)',
+      description: 'สัมผัสความหนาวเย็นและพบกับเพื่อนรักต่างสายพันธุ์ เพนกวินและหมีขาว',
+      image_url: 'http://localhost:3000/images/zone/polarzone.png' 
+    });
+
+    const rainforest = await this.zoneRepo.save({ 
+      name: 'โซนป่าดิบชื้น (Rainforest)',
+      description: 'ผจญภัยในป่าทึบลึกลับ ที่อยู่อาศัยของเสือโคร่งและลิงกอริลลา',
+      image_url: 'http://localhost:3000/images/zone/rainforest.png' 
+    });
+
+    const asia = await this.zoneRepo.save({ 
+      name: 'โซนสัตว์เอเชีย (Asian)',
+      description: 'ชื่นชมวิถีชีวิตสัตว์โซนเอเชีย ทั้งช้างไทยและแพนด้าแสนน่ารัก',
+      image_url: 'http://localhost:3000/images/zone/asiazone.png' 
+    });
+
+
+    // --- 2. สร้าง SPECIES (พันธุ์สัตว์) ---
     // โซนสะวันนา
     const lion = await this.speciesRepo.save({ name: 'สิงโต (Lion)', image_url: 'https://placehold.co/600x400?text=Lion', zone: savanna });
     const zebra = await this.speciesRepo.save({ name: 'ม้าลาย (Zebra)', image_url: 'https://placehold.co/600x400?text=Zebra', zone: savanna });
@@ -44,7 +71,7 @@ export class SeedService implements OnModuleInit {
     const elephant = await this.speciesRepo.save({ name: 'ช้างไทย (Thai Elephant)', image_url: 'https://placehold.co/600x400?text=Elephant', zone: asia });
     const panda = await this.speciesRepo.save({ name: 'แพนด้า (Panda)', image_url: 'https://placehold.co/600x400?text=Panda', zone: asia });
 
-    // --- 3. สร้าง ANIMALS (ตัวสัตว์จริง) ผูกกับ Species ---
+    // --- 3. สร้าง ANIMALS (ตัวสัตว์จริง) ---
     await this.animalRepo.save([
         // Savanna Animals
         { name: 'Simba', characteristics: 'กล้าหาญ เป็นจ่าฝูง', species: lion, image_url: 'https://placehold.co/400?text=Simba' },

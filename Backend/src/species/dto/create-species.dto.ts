@@ -1,10 +1,13 @@
-import { IsString, IsNotEmpty, IsInt } from 'class-validator';
+import { IsString, IsNotEmpty } from 'class-validator';
 
 export class CreateSpeciesDto {
   @IsString()
   @IsNotEmpty()
   name: string;
 
-  @IsInt()
-  zoneId: string; // รับเป็น ID ตัวเลข
+  // 🔴 ของเดิม: @IsInt()
+  // 🟢 แก้เป็น:
+  @IsString() 
+  @IsNotEmpty()
+  zoneId: string;
 }

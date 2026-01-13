@@ -1,19 +1,21 @@
-import { IsString, IsNotEmpty, IsInt, IsOptional, IsUrl } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateAnimalDto {
   @IsString()
   @IsNotEmpty()
-  name: string; // ชื่อสัตว์
+  name: string;
 
   @IsString()
   @IsNotEmpty()
-  characteristics: string; // ลักษณะเด่น
+  characteristics: string;
 
   @IsString()
-  @IsOptional() // รูปภาพไม่ใส่ก็ได้ (เผื่อยังไม่มีรูป)
+  @IsOptional()
   image_url?: string;
 
-  @IsInt()
+  // 🔴 ของเดิม: @IsInt()  <-- ผิด! เพราะ ID เราเป็น UUID
+  // 🟢 แก้เป็น:
+  @IsString()
   @IsNotEmpty()
-  speciesId: string; // ต้องส่ง ID สายพันธุ์มาเป็นตัวเลข
+  speciesId: string; 
 }

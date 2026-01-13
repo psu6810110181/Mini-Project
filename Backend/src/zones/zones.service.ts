@@ -15,10 +15,14 @@ export class ZonesService {
 
   findAll() { return this.repo.find({ relations: ['species'] }); }
 
-  async findOne(id: string) {
-    const zone = await this.repo.findOne({ where: { id }, relations: ['species'] });
-    if (!zone) throw new NotFoundException('ไม่เจอโซนนี้ครับ');
-    return zone;
+// ไฟล์: src/zones/zones.service.ts
+
+  async findOne(id: string) { // รับ id เป็น string (ตามที่คุณแก้ใน frontend)
+    return this.repo.findOne({
+      where: { id }, 
+      // ⭐ บรรทัดนี้สำคัญที่สุด! ถ้าไม่มีบรรทัดนี้ สัตว์จะไม่โผล่
+      relations: ['species', 'species.animals'], 
+    });
   }
 
   async update(id:string , dto: UpdateZoneDto) {
@@ -28,6 +32,12 @@ export class ZonesService {
 
   async remove(id: string) {
     const zone = await this.findOne(id);
+      
+      // ✅ เพิ่มบล็อกนี้เข้าไป: ถ้าหาไม่เจอ ให้โยน Error ออกไปเลย
+    if (!zone) {
+      throw new NotFoundException(`ไม่พบโซนรหัส ${id}`);
+    }
+
     return this.repo.remove(zone);
   }
 }
